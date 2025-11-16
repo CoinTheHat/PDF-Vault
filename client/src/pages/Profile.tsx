@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CopyButton } from "@/components/CopyButton";
 import { 
   Shield, 
   FileText, 
@@ -13,7 +14,8 @@ import {
   ExternalLink,
   AlertCircle,
   Wallet,
-  Plus
+  Plus,
+  Link as LinkIcon
 } from "lucide-react";
 import type { CVProof } from "@shared/schema";
 
@@ -169,6 +171,23 @@ export default function Profile() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Shareable Link */}
+                    <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 p-3">
+                      <div className="flex items-start gap-2 mb-2">
+                        <LinkIcon className="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
+                        <div className="min-w-0 flex-1">
+                          <p className="mb-1 text-xs font-medium text-green-800 dark:text-green-300">Shareable Link</p>
+                          <p className="font-mono text-xs break-all text-muted-foreground" data-testid={`text-link-${proof.id}`}>
+                            {`${window.location.origin}/p/${proof.proofCode}`}
+                          </p>
+                        </div>
+                      </div>
+                      <CopyButton 
+                        text={`${window.location.origin}/p/${proof.proofCode}`} 
+                        label="Copy Link" 
+                      />
+                    </div>
+
                     {/* File Hash */}
                     <div className="flex items-start gap-2 rounded-lg border border-card-border bg-muted/30 p-3">
                       <Hash className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
