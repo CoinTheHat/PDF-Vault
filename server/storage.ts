@@ -1,5 +1,8 @@
-import { type User, type InsertUser, type CVProof, type InsertCVProof } from "@shared/schema";
+import { type User, type InsertUser, type CVProof, type InsertCVProof, users, cvProofs } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
+import { eq, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User methods (legacy - can be removed if not needed)
@@ -63,4 +66,51 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DbStorage implements IStorage {
+  private db;
+
+  constructor() {
+    if (!process.env.DATABASE_URL) {
+      throw new Error("DATABASE_URL environment variable is required for DbStorage");
+    }
+    const connection = neon(process.env.DATABASE_URL);
+    this.db = drizzle(connection);
+  }
+
+  // User methods
+  async getUser(id: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await this.db.select().from(users).where(eq(users.username, username));
+    return result[0];
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const result = await this.db.insert(users).values(insertUser).returning();
+    return result[0];
+  }
+
+  // CV Proof methods
+  async createCVProof(insertProof: InsertCVProof): Promise<CVProof> {
+    const result = await this.db.insert(cvProofs).values(insertProof).returning();
+    return result[0];
+  }
+
+  async getCVProofByCode(proofCode: string): Promise<CVProof | undefined> {
+    const result = await this.db.select().from(cvProofs).where(eq(cvProofs.proofCode, proofCode));
+    return result[0];
+  }
+
+  async getCVProofsByWallet(walletAddress: string): Promise<CVProof[]> {
+    const result = await this.db.select().from(cvProofs).where(
+      sql`lower(${cvProofs.walletAddress}) = lower(${walletAddress})`
+    );
+    return result;
+  }
+}
+
+// Use DbStorage for production, MemStorage for development/testing
+export const storage = process.env.DATABASE_URL ? new DbStorage() : new MemStorage();
