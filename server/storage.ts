@@ -12,6 +12,7 @@ export interface IStorage {
 
   // CV Proof methods
   createCVProof(proof: InsertCVProof): Promise<CVProof>;
+  updateCVProofTxHash(proofCode: string, txHash: string): Promise<CVProof | undefined>;
   getCVProofByCode(proofCode: string): Promise<CVProof | undefined>;
   getCVProofsByWallet(walletAddress: string): Promise<CVProof[]>;
 }
@@ -64,6 +65,16 @@ export class MemStorage implements IStorage {
       (proof) => proof.walletAddress.toLowerCase() === walletAddress.toLowerCase()
     );
   }
+
+  async updateCVProofTxHash(proofCode: string, txHash: string): Promise<CVProof | undefined> {
+    const proof = this.cvProofs.get(proofCode);
+    if (!proof) return undefined;
+
+    const updatedProof = { ...proof, txHash, proofCode: txHash };
+    this.cvProofs.delete(proofCode);
+    this.cvProofs.set(txHash, updatedProof);
+    return updatedProof;
+  }
 }
 
 export class DbStorage implements IStorage {
@@ -109,6 +120,15 @@ export class DbStorage implements IStorage {
       sql`lower(${cvProofs.walletAddress}) = lower(${walletAddress})`
     );
     return result;
+  }
+
+  async updateCVProofTxHash(proofCode: string, txHash: string): Promise<CVProof | undefined> {
+    const result = await this.db
+      .update(cvProofs)
+      .set({ txHash, proofCode: txHash })
+      .where(eq(cvProofs.proofCode, proofCode))
+      .returning();
+    return result[0];
   }
 }
 

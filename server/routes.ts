@@ -115,19 +115,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Proof Code: ${proofCode}`);
       console.log(`Real Tx Hash: ${txHash}`);
 
-      const proof = await storage.getCVProofByCode(proofCode);
+      // Update with real transaction hash
+      const updatedProof = await storage.updateCVProofTxHash(proofCode, txHash);
 
-      if (!proof) {
-        return res.status(404).json({ message: "Proof not found" });
+      if (!updatedProof) {
+        return res.status(404).json({ message: "Failed to update proof" });
       }
 
-      // Update with real transaction hash
-      const updatedProof = await storage.createCVProof({
-        ...proof,
-        txHash,
-        proofCode: txHash, // Use real tx hash as proof code
-      });
-
+      console.log(`✅ Updated proof code: ${proofCode} → ${txHash}`);
       console.log(`=== Transaction Updated ===\n`);
 
       res.json(updatedProof);
