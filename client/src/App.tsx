@@ -10,6 +10,7 @@ import RegisterCV from "@/pages/RegisterCV";
 import Success from "@/pages/Success";
 import Verify from "@/pages/Verify";
 import ProofDisplay from "@/pages/ProofDisplay";
+import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
 import { getFullnodeUrl } from "@mysten/sui/client";
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/register" component={RegisterCV} />
       <Route path="/success/:proofCode" component={Success} />
       <Route path="/verify" component={Verify} />
+      <Route path="/profile" component={Profile} />
       <Route path="/p/:proofCode" component={ProofDisplay} />
       <Route component={NotFound} />
     </Switch>

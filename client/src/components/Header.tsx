@@ -1,7 +1,29 @@
 import { Link, useLocation } from "wouter";
-import { Shield, Wallet } from "lucide-react";
+import { Shield, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConnectButton, useCurrentAccount } from "@mysten/dapp-kit";
+
+function WalletButton() {
+  const currentAccount = useCurrentAccount();
+  const [, setLocation] = useLocation();
+
+  if (!currentAccount) {
+    return <ConnectButton data-testid="button-connect-wallet" />;
+  }
+
+  return (
+    <Button
+      variant="outline"
+      size="default"
+      className="gap-2"
+      onClick={() => setLocation("/profile")}
+      data-testid="button-profile"
+    >
+      <User className="h-4 w-4" />
+      <span className="hidden sm:inline">Profile</span>
+    </Button>
+  );
+}
 
 export function Header() {
   const [location] = useLocation();
@@ -38,7 +60,7 @@ export function Header() {
               <span>Verify</span>
             </Button>
           </Link>
-          <ConnectButton data-testid="button-connect-wallet" />
+          <WalletButton />
         </nav>
       </div>
     </header>
