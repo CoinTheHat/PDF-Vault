@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { createHash } from "crypto";
 import { storage } from "./storage";
-import { uploadCVToWalrus } from "./services/walrusService";
+import { uploadCVToWalrus, retrieveFromWalrus } from "./services/walrusService";
 import { registerCVProofOnSui } from "./services/suiService";
 import { z } from "zod";
 
@@ -164,6 +164,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error retrieving CV proof:", error);
       res.status(500).json({
         message: error instanceof Error ? error.message : "Failed to retrieve CV proof",
+      });
+    }
+  });
+
+  /**
+   * GET /api/cv/:contentId
+   * 
+   * Downloads CV file from Walrus storage
+   * - Retrieves file from Walrus
+   * - Serves as PDF with correct Content-Type
+   */
+  app.get("/api/cv/:contentId", async (req, res) => {
+    try {
+      const { contentId } = req.params;
+
+      console.log(`\n=== Downloading CV from Walrus ===`);
+      console.log(`Content ID: ${contentId}`);
+
+      const fileBuffer = await retrieveFromWalrus(contentId);
+
+      if (!fileBuffer) {
+        console.log(`File not found in Walrus`);
+        return res.status(404).json({ message: "CV file not found" });
+      }
+
+      console.log(`✅ Retrieved ${fileBuffer.length} bytes from Walrus`);
+      console.log(`=== Download Complete ===\n`);
+
+      // Set proper headers for PDF download
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="cv-${contentId.substring(0, 8)}.pdf"`);
+      res.send(fileBuffer);
+    } catch (error) {
+      console.error("Error downloading CV:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to download CV",
       });
     }
   });

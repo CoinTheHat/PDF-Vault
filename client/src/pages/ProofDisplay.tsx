@@ -172,7 +172,7 @@ export default function ProofDisplay() {
           <CardContent>
             <Button
               className="w-full h-12 text-base"
-              onClick={() => window.open(proof.storageUrl, "_blank")}
+              onClick={() => window.open(`/api/cv/${proof.contentId}`, "_blank")}
               data-testid="button-view-cv"
             >
               View CV Document
