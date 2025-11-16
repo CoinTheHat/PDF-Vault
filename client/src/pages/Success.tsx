@@ -88,20 +88,26 @@ export default function Success() {
         </Card>
 
         {/* Shareable URL Card */}
-        <Card className="mb-6 border-card-border">
+        <Card className="mb-6 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10">
           <CardHeader>
-            <CardTitle className="text-lg">Shareable Verification Link</CardTitle>
+            <div className="flex items-center gap-2">
+              <ExternalLink className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <CardTitle className="text-lg">🔗 Shareable Verification Link</CardTitle>
+            </div>
             <CardDescription>
-              Share this link with recruiters for instant CV verification.
+              Copy this link and share it with recruiters for instant CV verification.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-2 rounded-lg bg-muted p-4">
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-2 rounded-lg bg-background border border-card-border p-4">
               <code className="flex-1 font-mono text-sm break-all" data-testid="text-shareable-url">
                 {shareableUrl}
               </code>
-              <CopyButton text={shareableUrl} label="Copy" />
+              <CopyButton text={shareableUrl} label="Copy Link" />
             </div>
+            <p className="text-xs text-muted-foreground text-center">
+              ✨ Anyone with this link can view and verify your CV proof
+            </p>
           </CardContent>
         </Card>
 
@@ -169,15 +175,15 @@ export default function Success() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary">1.</span>
-                <span>Copy the shareable link above and include it in your job applications</span>
+                <span><strong>Copy the green shareable link</strong> above and include it in your job applications, LinkedIn profile, or resume</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">2.</span>
-                <span>Recruiters can click the link to verify your CV instantly</span>
+                <span>Recruiters can click the link to <strong>verify your CV instantly</strong> without any registration</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">3.</span>
-                <span>Your CV is tamper-proof and permanently stored on the blockchain</span>
+                <span>Your CV is <strong>tamper-proof</strong> and permanently stored on Walrus decentralized storage with blockchain proof</span>
               </li>
             </ul>
           </CardContent>
