@@ -49,11 +49,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "CV file is required" });
       }
 
+      // Parse allowedViewers from JSON string if needed
+      let parsedBody = { ...req.body };
+      if (req.body.allowedViewers && typeof req.body.allowedViewers === 'string') {
+        try {
+          parsedBody.allowedViewers = JSON.parse(req.body.allowedViewers);
+        } catch (e) {
+          return res.status(400).json({
+            message: "Invalid allowedViewers format. Must be a JSON array of wallet addresses.",
+          });
+        }
+      }
+
       // Validate request body
-      const validation = registerSchema.safeParse(req.body);
+      const validation = registerSchema.safeParse(parsedBody);
       if (!validation.success) {
         return res.status(400).json({
-          message: "Invalid wallet address",
+          message: "Validation failed",
           errors: validation.error.errors,
         });
       }
