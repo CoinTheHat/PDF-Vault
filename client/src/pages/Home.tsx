@@ -1,36 +1,51 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, Link as LinkIcon, CheckCircle2, Upload, Search, FileCheck, Lock, Zap } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Shield, Link as LinkIcon, CheckCircle2, Upload, Search, FileCheck, Lock, Zap, Award, Verified, Globe, Github, Twitter } from "lucide-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Gradient Background */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5 pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent pointer-events-none" />
+      {/* Premium Hero Section */}
+      <section className="relative py-24 md:py-32 lg:py-40 overflow-hidden">
+        {/* Advanced Gradient Background with Visual Depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-primary/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/12 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-accent/8 via-transparent to-transparent pointer-events-none" />
+        
+        {/* Decorative Grid Pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] opacity-20 pointer-events-none" />
         
         <div className="container relative">
-          <div className="mx-auto max-w-3xl text-center">
-            {/* Enhanced Badge with Gradient */}
-            <div className="mb-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 px-5 py-2.5 text-sm font-semibold text-primary shadow-sm">
-              <Shield className="h-4 w-4" />
-              Blockchain-Backed Verification
+          <div className="mx-auto max-w-4xl">
+            {/* Trust Badge with Premium Styling */}
+            <div className="mb-8 flex justify-center">
+              <Badge className="gap-2 px-4 py-2 text-sm font-semibold border-primary/40 bg-primary/10 text-primary hover:bg-primary/15 shadow-sm">
+                <Award className="h-4 w-4" />
+                Enterprise-Grade Verification
+                <Verified className="h-4 w-4" />
+              </Badge>
             </div>
             
-            {/* Improved Typography */}
-            <h1 className="mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              Tamper-Proof <br />CV Verification
+            {/* Power Headline with Better Hierarchy */}
+            <h1 className="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
+              Tamper-Proof <br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">CV Verification</span>
             </h1>
             
-            <p className="mb-10 text-lg text-muted-foreground sm:text-xl font-normal max-w-2xl mx-auto leading-relaxed">
-              Upload your CV, store it securely on Walrus, and get a blockchain-proof verification link recruiters can trust instantly.
+            {/* Stronger, Cleaner Tagline */}
+            <p className="mb-4 text-center text-xl sm:text-2xl font-semibold text-foreground/90">
+              Blockchain-powered credentials recruiters trust.
             </p>
             
-            {/* Enhanced Buttons with Hover Effects */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            {/* Simplified Supporting Copy */}
+            <p className="mb-10 text-center text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+              Upload once. Verify forever. Store securely on Walrus, prove authenticity on Sui.
+            </p>
+            
+            {/* Premium CTA Buttons with Visual Prominence */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:justify-center mb-12">
               <Link href="/register">
                 <Button 
                   size="lg" 
@@ -39,8 +54,8 @@ export default function Home() {
                   asChild
                 >
                   <span className="flex items-center gap-2">
-                    Register CV
                     <Upload className="h-5 w-5" />
+                    Register Your CV
                   </span>
                 </Button>
               </Link>
@@ -53,11 +68,27 @@ export default function Home() {
                   asChild
                 >
                   <span className="flex items-center gap-2">
-                    Verify CV
                     <Search className="h-5 w-5" />
+                    Verify a CV
                   </span>
                 </Button>
               </Link>
+            </div>
+
+            {/* Social Proof / Trust Indicators */}
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-primary" />
+                <span>Blockchain Secured</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-primary" />
+                <span>Decentralized Storage</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Instant Verification</span>
+              </div>
             </div>
           </div>
         </div>
@@ -276,26 +307,96 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t bg-muted/30">
-        <div className="container py-8">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="font-semibold">On-Chain CV Proof Vault</span>
+      {/* Premium Footer with Trust Signals */}
+      <footer className="border-t bg-gradient-to-b from-background to-muted/20">
+        <div className="container">
+          {/* Trust Badges Section */}
+          <div className="py-12 border-b">
+            <div className="text-center mb-8">
+              <h3 className="text-lg font-semibold mb-2">Powered By Industry Leaders</h3>
+              <p className="text-sm text-muted-foreground">Decentralized infrastructure you can trust</p>
             </div>
-            
-            <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5">
-                <span>Powered by</span>
-                <span className="font-semibold text-foreground">Walrus</span>
-                <span>&</span>
-                <span className="font-semibold text-foreground">Sui Blockchain</span>
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border">
+                  <Globe className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-base">Walrus</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Decentralized Storage</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-base">Sui Blockchain</span>
+                </div>
+                <span className="text-xs text-muted-foreground">On-Chain Verification</span>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-card border">
+                  <Lock className="h-5 w-5 text-primary" />
+                  <span className="font-semibold text-base">Enterprise Security</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Tamper-Proof</span>
               </div>
             </div>
-            
-            <div className="text-sm text-muted-foreground">
-              © 2024 CV Proof Vault
+          </div>
+
+          {/* Footer Links & Info */}
+          <div className="py-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+              {/* Brand Column */}
+              <div className="md:col-span-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <Shield className="h-5 w-5 text-primary" />
+                  <span className="font-bold text-lg">CV Proof Vault</span>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4 max-w-sm">
+                  Enterprise-grade CV verification powered by blockchain technology. 
+                  Secure, transparent, and trusted by professionals worldwide.
+                </p>
+                <div className="flex items-center gap-3">
+                  <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-github">
+                    <Github className="h-5 w-5" />
+                  </a>
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-twitter">
+                    <Twitter className="h-5 w-5" />
+                  </a>
+                  <a href="https://walrus.xyz" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors" data-testid="link-walrus">
+                    <Globe className="h-5 w-5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Quick Links */}
+              <div>
+                <h4 className="font-semibold mb-3 text-sm">Product</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><Link href="/register" data-testid="footer-link-register"><span className="hover:text-foreground transition-colors cursor-pointer">Register CV</span></Link></li>
+                  <li><Link href="/verify" data-testid="footer-link-verify"><span className="hover:text-foreground transition-colors cursor-pointer">Verify CV</span></Link></li>
+                  <li><Link href="/profile" data-testid="footer-link-profile"><span className="hover:text-foreground transition-colors cursor-pointer">My Profile</span></Link></li>
+                </ul>
+              </div>
+
+              {/* Resources */}
+              <div>
+                <h4 className="font-semibold mb-3 text-sm">Resources</h4>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li><a href="https://docs.walrus.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors" data-testid="footer-link-walrus-docs">Walrus Docs</a></li>
+                  <li><a href="https://docs.sui.io" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors" data-testid="footer-link-sui-docs">Sui Docs</a></li>
+                  <li><a href="#how-it-works" className="hover:text-foreground transition-colors" data-testid="footer-link-how">How It Works</a></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Copyright Bar */}
+            <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="text-sm text-muted-foreground">
+                © 2024 CV Proof Vault. All rights reserved.
+              </div>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span className="hover:text-foreground transition-colors cursor-pointer">Privacy Policy</span>
+                <span className="hover:text-foreground transition-colors cursor-pointer">Terms of Service</span>
+              </div>
             </div>
           </div>
         </div>

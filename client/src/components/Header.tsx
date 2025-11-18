@@ -72,21 +72,29 @@ export function Header() {
   const [location] = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80 shadow-sm">
+      <div className="container flex h-20 items-center justify-between">
+        {/* Premium Logo/Brand */}
         <Link href="/" data-testid="link-home">
-          <div className="flex items-center gap-2 font-bold text-xl hover-elevate active-elevate-2 rounded-md px-3 py-2 -ml-3 transition-colors cursor-pointer">
-            <Shield className="h-6 w-6 text-primary" />
-            <span className="hidden sm:inline">On-Chain CV Proof Vault</span>
-            <span className="sm:hidden">CV Vault</span>
+          <div className="flex items-center gap-3 font-bold text-xl hover-elevate active-elevate-2 rounded-lg px-4 py-2 -ml-4 transition-all cursor-pointer group">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover:bg-primary/15 transition-colors">
+              <Shield className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex flex-col">
+              <span className="hidden md:inline text-base font-bold leading-tight">CV Proof Vault</span>
+              <span className="hidden md:inline text-xs text-muted-foreground font-normal">Enterprise Verification</span>
+              <span className="md:hidden text-base font-bold">CV Vault</span>
+            </div>
           </div>
         </Link>
         
-        <nav className="flex items-center gap-2">
+        {/* Premium Navigation */}
+        <nav className="flex items-center gap-3">
           <Link href="/register">
             <Button
               variant={location === "/register" ? "default" : "ghost"}
               size="default"
+              className="font-medium"
               data-testid="button-register"
               asChild
             >
@@ -97,6 +105,7 @@ export function Header() {
             <Button
               variant={location === "/verify" ? "default" : "ghost"}
               size="default"
+              className="font-medium"
               data-testid="button-verify"
               asChild
             >
