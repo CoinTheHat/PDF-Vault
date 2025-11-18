@@ -8,9 +8,11 @@ import { z } from "zod";
 export const cvProofs = pgTable("cv_proofs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   walletAddress: text("wallet_address").notNull(),
-  fileHash: text("file_hash").notNull(), // SHA-256 hash of the PDF
-  contentId: text("content_id").notNull(), // Walrus content ID
-  storageUrl: text("storage_url").notNull(), // URL to retrieve CV from Walrus
+  fileHash: text("file_hash").notNull(), // SHA-256 hash of the original PDF
+  sealObjectId: text("seal_object_id").notNull(), // Seal encryption policy object ID
+  ciphertextHash: text("ciphertext_hash").notNull(), // SHA-256 hash of encrypted data
+  contentId: text("content_id").notNull(), // Walrus content ID (stores encrypted CV)
+  storageUrl: text("storage_url").notNull(), // URL to retrieve encrypted CV from Walrus
   txHash: text("tx_hash").notNull(), // Sui transaction hash
   proofCode: text("proof_code").notNull().unique(), // Unique shareable proof code
   createdAt: timestamp("created_at").notNull().defaultNow(),
