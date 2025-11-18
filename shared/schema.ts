@@ -15,6 +15,8 @@ export const cvProofs = pgTable("cv_proofs", {
   storageUrl: text("storage_url").notNull(), // URL to retrieve encrypted CV from Walrus
   txHash: text("tx_hash").notNull(), // Sui transaction hash
   proofCode: text("proof_code").notNull().unique(), // Unique shareable proof code
+  secretAccessCode: text("secret_access_code"), // Optional secret code for access (alternative to wallet)
+  allowedViewers: text("allowed_viewers").array(), // Wallet addresses allowed to view (in addition to owner)
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

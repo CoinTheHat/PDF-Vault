@@ -21,6 +21,7 @@ interface EncryptCVParams {
   ownerAddress: string;
   policy?: {
     allowedViewers?: string[];
+    secretAccessCode?: string;
     requireApproval?: boolean;
   };
 }
@@ -33,7 +34,8 @@ interface EncryptCVResult {
 
 interface GetDecryptionKeyParams {
   sealObjectId: string;
-  viewerAddress: string;
+  viewerAddress?: string;
+  secretAccessCode?: string;
 }
 
 interface GetDecryptionKeyResult {
@@ -122,7 +124,7 @@ class SealService {
     this.sealObjects.set(sealObjectId, {
       ownerAddress,
       encryptionKey,
-      policy: policy || { allowedViewers: [], requireApproval: false },
+      policy: policy || { allowedViewers: [], secretAccessCode: undefined, requireApproval: false },
       createdAt: new Date()
     });
 
@@ -156,7 +158,11 @@ class SealService {
    * ```
    */
   async getDecryptionKey(params: GetDecryptionKeyParams): Promise<GetDecryptionKeyResult> {
-    const { sealObjectId, viewerAddress } = params;
+    const { sealObjectId, viewerAddress, secretAccessCode } = params;
+
+    console.log(`[Seal Mock] Access request for ${sealObjectId}`);
+    if (viewerAddress) console.log(`  - Via wallet: ${viewerAddress}`);
+    if (secretAccessCode) console.log(`  - Via secret code: ${secretAccessCode.substring(0, 8)}...`);
 
     const sealObject = this.sealObjects.get(sealObjectId);
     
@@ -164,26 +170,47 @@ class SealService {
       throw new Error(`Seal object not found: ${sealObjectId}`);
     }
 
-    // MOCK: Always approve access for MVP demo
+    // MOCK: Check access via wallet OR secret code
     // REAL: Check on-chain policy and require wallet signature
     const { policy, ownerAddress } = sealObject;
     
-    // Mock policy check
-    const isOwner = viewerAddress.toLowerCase() === ownerAddress.toLowerCase();
-    const isAllowedViewer = policy.allowedViewers?.includes(viewerAddress) || false;
-    const approved = isOwner || isAllowedViewer || !policy.requireApproval;
+    // Method 1: Secret access code (if provided and matches)
+    if (secretAccessCode && policy.secretAccessCode) {
+      if (secretAccessCode === policy.secretAccessCode) {
+        console.log(`[Seal Mock] ✓ Access granted via secret code`);
+        return {
+          decryptKey: sealObject.encryptionKey,
+          approved: true
+        };
+      } else {
+        console.log(`[Seal Mock] ✗ Invalid secret code`);
+        throw new Error(`Access denied. Invalid secret access code.`);
+      }
+    }
+    
+    // Method 2: Wallet-based access control (owner or allowed viewers)
+    if (viewerAddress) {
+      const isOwner = viewerAddress.toLowerCase() === ownerAddress.toLowerCase();
+      const isAllowedViewer = policy.allowedViewers?.some(
+        (addr: string) => addr.toLowerCase() === viewerAddress.toLowerCase()
+      ) || false;
+      const approved = isOwner || isAllowedViewer || !policy.requireApproval;
 
-    if (!approved) {
-      console.log(`[Seal Mock] Access denied for ${viewerAddress} to ${sealObjectId}`);
-      throw new Error(`Access denied. Viewer ${viewerAddress} is not authorized to decrypt this CV.`);
+      if (!approved) {
+        console.log(`[Seal Mock] ✗ Access denied for ${viewerAddress}`);
+        throw new Error(`Access denied. Wallet ${viewerAddress} is not authorized to decrypt this CV.`);
+      }
+
+      console.log(`[Seal Mock] ✓ Access granted for ${viewerAddress} (${isOwner ? 'owner' : 'allowed viewer'})`);
+      
+      return {
+        decryptKey: sealObject.encryptionKey,
+        approved: true
+      };
     }
 
-    console.log(`[Seal Mock] Access granted for ${viewerAddress} to ${sealObjectId}`);
-    
-    return {
-      decryptKey: sealObject.encryptionKey,
-      approved: true
-    };
+    // No valid authentication method provided
+    throw new Error(`Access denied. Please provide either a wallet address or secret access code.`);
   }
 
   /**

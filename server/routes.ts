@@ -26,6 +26,9 @@ const upload = multer({
 // Validation schema for registration
 const registerSchema = z.object({
   walletAddress: z.string().min(10, "Wallet address must be at least 10 characters"),
+  accessMode: z.enum(["owner_only", "specific_wallets", "secret_code"]).optional(),
+  allowedViewers: z.array(z.string()).optional(), // For "specific_wallets" mode
+  secretAccessCode: z.string().optional(), // For "secret_code" mode (will auto-generate if not provided)
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -55,26 +58,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const { walletAddress } = validation.data;
+      const { walletAddress, accessMode, allowedViewers, secretAccessCode } = validation.data;
       const fileBuffer = req.file.buffer;
       const fileName = req.file.originalname;
 
       console.log(`\n=== Starting CV Registration with Seal Encryption ===`);
       console.log(`File: ${fileName} (${fileBuffer.length} bytes)`);
       console.log(`Wallet: ${walletAddress}`);
+      console.log(`Access Mode: ${accessMode || 'owner_only'}`);
 
       // Step 1: Compute original file hash (SHA-256)
       const fileHash = createHash("sha256").update(fileBuffer).digest("hex");
       console.log(`✅ Original File Hash: ${fileHash}`);
 
-      // Step 2: Encrypt CV using Seal
+      // Step 2: Encrypt CV using Seal with access control policy
+      // Generate secret code if accessMode is "secret_code"
+      const generatedSecretCode = (accessMode === "secret_code" && !secretAccessCode)
+        ? crypto.randomBytes(8).toString('hex')
+        : secretAccessCode;
+
+      if (generatedSecretCode) {
+        console.log(`✅ Generated Secret Access Code: ${generatedSecretCode}`);
+      }
+
       const { ciphertext, sealObjectId } = await sealService.encryptCV({
         pdfBytes: fileBuffer,
         ownerAddress: walletAddress,
         policy: {
-          // For MVP: allow any viewer (no restrictions)
-          allowedViewers: [],
-          requireApproval: false
+          allowedViewers: accessMode === "specific_wallets" ? (allowedViewers || []) : [],
+          secretAccessCode: generatedSecretCode,
+          requireApproval: accessMode === "owner_only" // Only owner if owner_only mode
         }
       });
       console.log(`✅ Encrypted with Seal. Object ID: ${sealObjectId}`);
@@ -107,6 +120,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         storageUrl,
         txHash,
         proofCode,
+        secretAccessCode: generatedSecretCode || null,
+        allowedViewers: (accessMode === "specific_wallets" ? allowedViewers : null) || null,
       });
 
       console.log(`✅ Proof Code: ${proofCode}`);
@@ -204,11 +219,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/proof/:proofCode/decrypted", async (req, res) => {
     try {
       const { proofCode } = req.params;
-      const { viewerAddress } = req.query;
+      const { viewerAddress, secretAccessCode } = req.query;
 
       console.log(`\n=== Decrypting CV ===`);
       console.log(`Proof Code: ${proofCode}`);
-      console.log(`Viewer: ${viewerAddress || 'anonymous'}`);
+      if (viewerAddress) console.log(`Viewer Wallet: ${viewerAddress}`);
+      if (secretAccessCode) console.log(`Secret Code: ${(secretAccessCode as string).substring(0, 8)}...`);
 
       // Step 1: Get proof record
       const proof = await storage.getCVProofByCode(proofCode);
@@ -232,9 +248,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`✅ Retrieved encrypted CV (${encryptedBuffer.length} bytes)`);
 
       // Step 3: Request decryption key from Seal (throws on access denial)
+      // Supports both wallet-based and secret code access
       const { decryptKey } = await sealService.getDecryptionKey({
         sealObjectId: proof.sealObjectId,
-        viewerAddress: (viewerAddress as string) || 'anonymous',
+        viewerAddress: viewerAddress as string | undefined,
+        secretAccessCode: secretAccessCode as string | undefined,
       });
 
       console.log(`✅ Access granted. Decrypting...`);

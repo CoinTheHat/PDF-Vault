@@ -50,6 +50,8 @@ export class MemStorage implements IStorage {
     const proof: CVProof = {
       ...insertProof,
       id,
+      secretAccessCode: insertProof.secretAccessCode ?? null,
+      allowedViewers: insertProof.allowedViewers ?? null,
       createdAt: new Date(),
     };
     this.cvProofs.set(proof.proofCode, proof);
