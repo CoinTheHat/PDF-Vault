@@ -215,11 +215,11 @@ export default function Profile() {
                       <Button
                         variant="outline"
                         className="w-full gap-2 sm:flex-1"
-                        onClick={() => window.open(`/api/cv/${proof.contentId}`, "_blank")}
+                        onClick={() => window.open(`/api/proof/${proof.proofCode}/decrypted?viewerAddress=${currentAccount.address}`, "_blank")}
                         data-testid={`button-view-cv-${proof.id}`}
                       >
                         <FileText className="h-4 w-4" />
-                        View CV
+                        View CV (Decrypt)
                         <ExternalLink className="h-3.5 w-3.5" />
                       </Button>
                     </div>

@@ -9,7 +9,7 @@ import Home from "@/pages/Home";
 import RegisterCV from "@/pages/RegisterCV";
 import Success from "@/pages/Success";
 import Verify from "@/pages/Verify";
-import ProofDisplay from "@/pages/ProofDisplay";
+import ProofView from "@/pages/ProofView";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/not-found";
 import { SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
@@ -33,7 +33,7 @@ function Router() {
       <Route path="/success/:proofCode" component={Success} />
       <Route path="/verify" component={Verify} />
       <Route path="/profile" component={Profile} />
-      <Route path="/p/:proofCode" component={ProofDisplay} />
+      <Route path="/p/:proofCode" component={ProofView} />
       <Route component={NotFound} />
     </Switch>
   );
