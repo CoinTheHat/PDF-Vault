@@ -6,6 +6,7 @@ import { storage } from "./storage";
 import { uploadCVToWalrus, retrieveFromWalrus } from "./services/walrusService";
 import { registerCVProofOnSui } from "./services/suiService";
 import { sealService } from "./services/sealService";
+import { generateChallenge, verifySignature } from "./auth";
 import { z } from "zod";
 
 // Configure multer for file uploads
@@ -249,23 +250,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`✅ Proof found for wallet: ${proof.walletAddress}`);
       console.log(`Seal Object ID: ${proof.sealObjectId}`);
 
-      // Security Check: Owner-only CVs cannot be accessed via proof link BY NON-OWNERS
-      // Owner can always view their own CV
-      const isOwnerOnly = !proof.secretAccessCode && (!proof.allowedViewers || proof.allowedViewers.length === 0);
-      const viewerAddr = typeof viewerAddress === 'string' ? viewerAddress : undefined;
-      const isOwner = viewerAddr && viewerAddr.toLowerCase() === proof.walletAddress.toLowerCase();
-      
-      if (isOwnerOnly && !isOwner) {
-        console.log(`❌ Security: Owner-only CV cannot be accessed via proof link by non-owner`);
-        return res.status(403).json({ 
-          message: "This CV is set to owner-only mode and cannot be accessed via proof link. The owner can view it in their profile." 
-        });
-      }
-      
-      if (isOwnerOnly && isOwner) {
-        console.log(`✅ Owner accessing their own owner-only CV`);
-      }
-
       // Step 2: Fetch encrypted CV from Walrus
       const encryptedBuffer = await retrieveFromWalrus(proof.contentId);
       
@@ -393,6 +377,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error retrieving CV proofs:", error);
       res.status(500).json({
         message: error instanceof Error ? error.message : "Failed to retrieve CV proofs",
+      });
+    }
+  });
+
+  /**
+   * POST /api/auth/challenge
+   * 
+   * Generate an authentication challenge nonce for wallet signature
+   * - Client requests a nonce for their wallet address
+   * - Server generates and stores the nonce with timestamp
+   * - Client signs the nonce with their wallet
+   * - Nonce expires after 5 minutes
+   */
+  app.post("/api/auth/challenge", async (req, res) => {
+    try {
+      const { walletAddress } = req.body;
+
+      if (!walletAddress || typeof walletAddress !== 'string') {
+        return res.status(400).json({ message: "Wallet address is required" });
+      }
+
+      const nonce = generateChallenge(walletAddress);
+
+      res.json({ nonce });
+    } catch (error) {
+      console.error("Error generating challenge:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to generate challenge",
+      });
+    }
+  });
+
+  /**
+   * POST /api/proof/:proofCode/decrypt-owner
+   * 
+   * Decrypt and serve CV PDF for authenticated owner
+   * - Verifies wallet signature against challenge nonce
+   * - Confirms the wallet owns the CV proof
+   * - Decrypts and serves the PDF
+   * 
+   * Security: Wallet ownership is verified via signature, preventing spoofing
+   */
+  app.post("/api/proof/:proofCode/decrypt-owner", async (req, res) => {
+    try {
+      const { proofCode } = req.params;
+      const { walletAddress, nonce, signature } = req.body;
+
+      console.log(`\n=== Authenticated Owner Decrypt ===`);
+      console.log(`Proof Code: ${proofCode}`);
+      console.log(`Wallet: ${walletAddress}`);
+
+      // Validate request body
+      if (!walletAddress || !nonce || !signature) {
+        return res.status(400).json({ 
+          message: "Missing required fields: walletAddress, nonce, signature" 
+        });
+      }
+
+      // Step 1: Verify wallet signature
+      const isValid = await verifySignature(nonce, walletAddress, signature);
+      
+      if (!isValid) {
+        console.log(`❌ Signature verification failed`);
+        return res.status(401).json({ 
+          message: "Invalid signature or expired challenge" 
+        });
+      }
+
+      console.log(`✅ Signature verified for wallet: ${walletAddress}`);
+
+      // Step 2: Get proof record
+      const proof = await storage.getCVProofByCode(proofCode);
+      
+      if (!proof) {
+        console.log(`❌ Proof not found`);
+        return res.status(404).json({ message: "Proof not found" });
+      }
+
+      // Step 3: Verify wallet owns this CV
+      if (proof.walletAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+        console.log(`❌ Wallet does not own this CV`);
+        console.log(`Expected: ${proof.walletAddress}`);
+        console.log(`Got: ${walletAddress}`);
+        return res.status(403).json({ 
+          message: "You do not own this CV proof" 
+        });
+      }
+
+      console.log(`✅ Wallet verified as CV owner`);
+
+      // Step 4: Fetch encrypted CV from Walrus
+      const encryptedBuffer = await retrieveFromWalrus(proof.contentId);
+      
+      if (!encryptedBuffer) {
+        console.log(`❌ Encrypted CV not found in Walrus`);
+        return res.status(404).json({ message: "Encrypted CV not found" });
+      }
+
+      console.log(`✅ Retrieved encrypted CV (${encryptedBuffer.length} bytes)`);
+
+      // Step 5: Request decryption key from Seal (owner always has access to their own CV)
+      const { decryptKey } = await sealService.getDecryptionKey({
+        sealObjectId: proof.sealObjectId,
+        viewerAddress: walletAddress,
+      });
+
+      console.log(`✅ Decryption key obtained`);
+
+      // Step 6: Verify ciphertext integrity
+      const computedHash = sealService.computeCiphertextHash(encryptedBuffer);
+      if (computedHash !== proof.ciphertextHash) {
+        console.log(`❌ Ciphertext hash mismatch!`);
+        return res.status(400).json({ 
+          message: "CV integrity check failed" 
+        });
+      }
+
+      console.log(`✅ Ciphertext integrity verified`);
+
+      // Step 7: Decrypt the CV
+      const decryptedPDF = await sealService.decryptCV({
+        ciphertext: encryptedBuffer,
+        decryptKey,
+      });
+
+      console.log(`✅ Decrypted successfully (${decryptedPDF.length} bytes)`);
+      console.log(`=== Authenticated Decrypt Complete ===\n`);
+
+      // Step 8: Serve the PDF
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `inline; filename="cv-${proofCode.substring(0, 8)}.pdf"`);
+      res.send(decryptedPDF);
+    } catch (error) {
+      console.error("Error decrypting CV for owner:", error);
+      res.status(500).json({
+        message: error instanceof Error ? error.message : "Failed to decrypt CV",
       });
     }
   });

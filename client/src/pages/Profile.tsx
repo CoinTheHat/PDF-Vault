@@ -1,11 +1,13 @@
-import { useCurrentAccount } from "@mysten/dapp-kit";
+import { useCurrentAccount, useSignPersonalMessage } from "@mysten/dapp-kit";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CopyButton } from "@/components/CopyButton";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Shield, 
   FileText, 
@@ -15,12 +17,16 @@ import {
   AlertCircle,
   Wallet,
   Plus,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Loader2
 } from "lucide-react";
 import type { CVProof } from "@shared/schema";
 
 export default function Profile() {
   const currentAccount = useCurrentAccount();
+  const { mutateAsync: signPersonalMessage } = useSignPersonalMessage();
+  const { toast } = useToast();
+  const [decryptingProofId, setDecryptingProofId] = useState<string | null>(null);
 
   const { data: proofs, isLoading, error, refetch } = useQuery<CVProof[]>({
     queryKey: ["/api/proofs/wallet", currentAccount?.address],
@@ -32,6 +38,75 @@ export default function Profile() {
     },
     enabled: !!currentAccount?.address,
   });
+
+  const handleDecryptCV = async (proof: CVProof) => {
+    if (!currentAccount?.address) {
+      toast({
+        title: "Wallet not connected",
+        description: "Please connect your wallet first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setDecryptingProofId(proof.id);
+
+    try {
+      // Step 1: Request challenge nonce
+      const challengeRes = await fetch("/api/auth/challenge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ walletAddress: currentAccount.address }),
+      });
+
+      if (!challengeRes.ok) {
+        throw new Error("Failed to get challenge nonce");
+      }
+
+      const { nonce } = await challengeRes.json();
+
+      // Step 2: Sign the nonce with wallet
+      const messageBytes = new TextEncoder().encode(nonce);
+      const { signature } = await signPersonalMessage({
+        message: messageBytes,
+      });
+
+      // Step 3: Request authenticated decrypt
+      const decryptRes = await fetch(`/api/proof/${proof.proofCode}/decrypt-owner`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: currentAccount.address,
+          nonce,
+          signature,
+        }),
+      });
+
+      if (!decryptRes.ok) {
+        const errorData = await decryptRes.json();
+        throw new Error(errorData.message || "Failed to decrypt CV");
+      }
+
+      // Step 4: Open PDF in new tab
+      const pdfBlob = await decryptRes.blob();
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      window.open(blobUrl, "_blank");
+
+      toast({
+        title: "Success",
+        description: "CV decrypted and opened",
+      });
+    } catch (err) {
+      console.error("Decrypt error:", err);
+      toast({
+        title: "Decryption failed",
+        description: err instanceof Error ? err.message : "Failed to decrypt CV",
+        variant: "destructive",
+      });
+    } finally {
+      setDecryptingProofId(null);
+    }
+  };
 
   if (!currentAccount) {
     return (
@@ -215,12 +290,22 @@ export default function Profile() {
                       <Button
                         variant="outline"
                         className="w-full gap-2 sm:flex-1"
-                        onClick={() => window.open(`/api/proof/${proof.proofCode}/decrypted?viewerAddress=${currentAccount.address}`, "_blank")}
+                        onClick={() => handleDecryptCV(proof)}
+                        disabled={decryptingProofId === proof.id}
                         data-testid={`button-view-cv-${proof.id}`}
                       >
-                        <FileText className="h-4 w-4" />
-                        View CV (Decrypt)
-                        <ExternalLink className="h-3.5 w-3.5" />
+                        {decryptingProofId === proof.id ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Decrypting...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="h-4 w-4" />
+                            View CV (Decrypt)
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </>
+                        )}
                       </Button>
                     </div>
                   </CardContent>
