@@ -94,12 +94,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`✅ Generated Secret Access Code: ${generatedSecretCode}`);
       }
 
-      const { ciphertext, sealObjectId } = await sealService.encryptCV({
+      const finalAccessMode = accessMode || "owner_only";
+
+      const { ciphertext, sealObjectId, encryptionKey } = await sealService.encryptCV({
         pdfBytes: fileBuffer,
         ownerAddress: walletAddress,
         policy: {
-          accessMode: accessMode || "owner_only",
-          allowedViewers: accessMode === "specific_wallets" ? (allowedViewers || []) : [],
+          accessMode: finalAccessMode,
+          allowedViewers: finalAccessMode === "specific_wallets" ? (allowedViewers || []) : [],
           secretAccessCode: generatedSecretCode
         }
       });
@@ -129,12 +131,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         fileHash,
         sealObjectId,
         ciphertextHash,
+        encryptionKey, // MOCK ONLY: Store for persistence across server restarts
+        accessMode: finalAccessMode,
         contentId,
         storageUrl,
         txHash,
         proofCode,
         secretAccessCode: generatedSecretCode || null,
-        allowedViewers: (accessMode === "specific_wallets" ? allowedViewers : null) || null,
+        allowedViewers: (finalAccessMode === "specific_wallets" ? allowedViewers : null) || null,
       });
 
       console.log(`✅ Proof Code: ${proofCode}`);
@@ -260,15 +264,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Retrieved encrypted CV (${encryptedBuffer.length} bytes)`);
 
-      // Step 3: Request decryption key from Seal (throws on access denial)
-      // Supports both wallet-based and secret code access
-      const { decryptKey } = await sealService.getDecryptionKey({
-        sealObjectId: proof.sealObjectId,
-        viewerAddress: viewerAddress as string | undefined,
-        secretAccessCode: secretAccessCode as string | undefined,
-      });
+      // Step 3: Check access control (using stored policy data)
+      const accessMode = proof.accessMode || 'owner_only';
+      console.log(`[Access Control] Mode: ${accessMode}`);
 
-      console.log(`✅ Access granted. Decrypting...`);
+      // Method 1: Secret code access (only if mode is secret_code)
+      if (accessMode === 'secret_code') {
+        if (!secretAccessCode) {
+          console.log(`[Access Control] ✗ Secret code required but not provided`);
+          throw new Error(`Access denied. This CV requires a secret access code.`);
+        }
+        
+        if (secretAccessCode !== proof.secretAccessCode) {
+          console.log(`[Access Control] ✗ Invalid secret code`);
+          throw new Error(`Access denied. Invalid secret access code.`);
+        }
+        
+        console.log(`[Access Control] ✓ Access granted via secret code`);
+      }
+      // Method 2: Wallet-based access control
+      else {
+        if (!viewerAddress || typeof viewerAddress !== 'string') {
+          console.log(`[Access Control] ✗ Wallet address required`);
+          throw new Error(`Access denied. Please provide a wallet address.`);
+        }
+
+        const isOwner = viewerAddress.toLowerCase() === proof.walletAddress.toLowerCase();
+        
+        // Owner-only mode: only owner can access
+        if (accessMode === 'owner_only') {
+          if (!isOwner) {
+            console.log(`[Access Control] ✗ Access denied (owner-only mode)`);
+            throw new Error(`Access denied. Only the CV owner can decrypt this CV.`);
+          }
+          console.log(`[Access Control] ✓ Access granted for owner`);
+        }
+        // Specific wallets mode: ONLY allowed viewers (owner must be explicitly added)
+        else if (accessMode === 'specific_wallets') {
+          const isAllowedViewer = proof.allowedViewers?.some(
+            (addr) => addr.toLowerCase() === viewerAddress.toLowerCase()
+          ) || false;
+          
+          if (!isAllowedViewer) {
+            console.log(`[Access Control] ✗ Wallet not in allowed list`);
+            throw new Error(`Access denied. Wallet ${viewerAddress} is not authorized to decrypt this CV.`);
+          }
+          console.log(`[Access Control] ✓ Access granted (allowed viewer)`);
+        }
+      }
 
       // Step 4: Verify ciphertext integrity
       const computedHash = sealService.computeCiphertextHash(encryptedBuffer);
@@ -283,10 +326,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Ciphertext integrity verified`);
 
-      // Step 5: Decrypt the CV
+      // Step 5: Decrypt the CV using stored encryption key
       const decryptedPDF = await sealService.decryptCV({
         ciphertext: encryptedBuffer,
-        decryptKey,
+        decryptKey: proof.encryptionKey, // Use stored key (MOCK ONLY)
       });
 
       console.log(`✅ Decrypted successfully (${decryptedPDF.length} bytes)`);
@@ -477,15 +520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Retrieved encrypted CV (${encryptedBuffer.length} bytes)`);
 
-      // Step 5: Request decryption key from Seal (owner always has access to their own CV)
-      const { decryptKey } = await sealService.getDecryptionKey({
-        sealObjectId: proof.sealObjectId,
-        viewerAddress: walletAddress,
-      });
-
-      console.log(`✅ Decryption key obtained`);
-
-      // Step 6: Verify ciphertext integrity
+      // Step 5: Verify ciphertext integrity
       const computedHash = sealService.computeCiphertextHash(encryptedBuffer);
       if (computedHash !== proof.ciphertextHash) {
         console.log(`❌ Ciphertext hash mismatch!`);
@@ -496,10 +531,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`✅ Ciphertext integrity verified`);
 
-      // Step 7: Decrypt the CV
+      // Step 6: Decrypt the CV using stored encryption key
       const decryptedPDF = await sealService.decryptCV({
         ciphertext: encryptedBuffer,
-        decryptKey,
+        decryptKey: proof.encryptionKey, // Use stored key (MOCK ONLY)
       });
 
       console.log(`✅ Decrypted successfully (${decryptedPDF.length} bytes)`);

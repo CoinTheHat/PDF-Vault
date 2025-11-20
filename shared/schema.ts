@@ -11,6 +11,8 @@ export const cvProofs = pgTable("cv_proofs", {
   fileHash: text("file_hash").notNull(), // SHA-256 hash of the original PDF
   sealObjectId: text("seal_object_id").notNull(), // Seal encryption policy object ID
   ciphertextHash: text("ciphertext_hash").notNull(), // SHA-256 hash of encrypted data
+  encryptionKey: text("encryption_key").notNull(), // MOCK ONLY: AES key (in production, managed by Seal on-chain)
+  accessMode: text("access_mode").notNull(), // owner_only | specific_wallets | secret_code
   contentId: text("content_id").notNull(), // Walrus content ID (stores encrypted CV)
   storageUrl: text("storage_url").notNull(), // URL to retrieve encrypted CV from Walrus
   txHash: text("tx_hash").notNull(), // Sui transaction hash

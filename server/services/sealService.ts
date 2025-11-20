@@ -29,7 +29,7 @@ interface EncryptCVParams {
 interface EncryptCVResult {
   ciphertext: Buffer;
   sealObjectId: string;
-  // NOTE: encryptionKey is NOT returned - it's stored internally/on-chain only
+  encryptionKey: string; // MOCK ONLY: Returned for storage persistence (real Seal manages on-chain)
 }
 
 interface GetDecryptionKeyParams {
@@ -133,8 +133,8 @@ class SealService {
 
     return {
       ciphertext,
-      sealObjectId
-      // encryptionKey is stored internally - NEVER exposed to caller
+      sealObjectId,
+      encryptionKey // MOCK ONLY: Return for storage persistence (real Seal doesn't expose keys)
     };
   }
 
