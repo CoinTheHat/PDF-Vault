@@ -216,18 +216,18 @@ class SealService {
       };
     }
     
-    // Specific wallets mode: owner OR allowed viewers
+    // Specific wallets mode: ONLY allowed viewers (owner must be explicitly added)
     if (accessMode === 'specific_wallets') {
       const isAllowedViewer = policy.allowedViewers?.some(
         (addr: string) => addr.toLowerCase() === viewerAddress.toLowerCase()
       ) || false;
       
-      if (!isOwner && !isAllowedViewer) {
+      if (!isAllowedViewer) {
         console.log(`[Seal Mock] ✗ Access denied for ${viewerAddress} (not in allowed list)`);
         throw new Error(`Access denied. Wallet ${viewerAddress} is not authorized to decrypt this CV.`);
       }
       
-      console.log(`[Seal Mock] ✓ Access granted for ${viewerAddress} (${isOwner ? 'owner' : 'allowed viewer'})`);
+      console.log(`[Seal Mock] ✓ Access granted for ${viewerAddress} (allowed viewer)`);
       return {
         decryptKey: sealObject.encryptionKey,
         approved: true

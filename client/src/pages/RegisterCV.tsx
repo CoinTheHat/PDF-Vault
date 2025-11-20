@@ -343,27 +343,35 @@ export default function RegisterCV() {
 
                 {/* Conditional field for specific wallets */}
                 {form.watch("accessMode") === "specific_wallets" && (
-                  <FormField
-                    control={form.control}
-                    name="allowedViewers"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Allowed Wallet Addresses</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            placeholder="Enter wallet addresses (one per line)&#10;0x123...&#10;0x456..."
-                            className="font-mono text-sm min-h-[120px]"
-                            data-testid="input-allowed-viewers"
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Enter one wallet address per line. These wallets can decrypt your CV.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/10">
+                      <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      <AlertDescription className="text-sm text-amber-800 dark:text-amber-300">
+                        <strong>Important:</strong> To access your own CV, you must include your wallet address ({currentAccount?.address ? `${currentAccount.address.substring(0, 12)}...` : 'your address'}) in the list below. Only wallets in this list can decrypt the CV.
+                      </AlertDescription>
+                    </Alert>
+                    <FormField
+                      control={form.control}
+                      name="allowedViewers"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Allowed Wallet Addresses</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder="Enter wallet addresses (one per line)&#10;0x123...&#10;0x456..."
+                              className="font-mono text-sm min-h-[120px]"
+                              data-testid="input-allowed-viewers"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Enter one wallet address per line. Only these wallets can decrypt your CV.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
                 )}
 
                 <Button
