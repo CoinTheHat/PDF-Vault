@@ -73,7 +73,7 @@ export default function ProofView() {
         if (response.status === 403) {
           throw new Error("Access denied. Invalid credentials.");
         }
-        throw new Error("Failed to decrypt CV");
+        throw new Error("Failed to decrypt PDF");
       }
 
       // Create a blob URL for the decrypted PDF
@@ -82,7 +82,7 @@ export default function ProofView() {
       setDecryptedPdfUrl(blobUrl);
     } catch (err) {
       console.error("Decryption error:", err);
-      setDecryptError(err instanceof Error ? err.message : "Failed to decrypt CV");
+      setDecryptError(err instanceof Error ? err.message : "Failed to decrypt PDF");
     } finally {
       setIsDecrypting(false);
     }
@@ -134,7 +134,7 @@ export default function ProofView() {
               </div>
               <h3 className="mb-2 text-lg font-semibold">Proof Not Found</h3>
               <p className="mb-6 text-sm text-muted-foreground max-w-md">
-                The CV proof you're looking for doesn't exist or has been removed.
+                The PDF proof you're looking for doesn't exist or has been removed.
               </p>
               <Button variant="outline" onClick={() => window.location.href = "/"} data-testid="button-go-home">
                 Go to Home
@@ -146,7 +146,7 @@ export default function ProofView() {
     );
   }
 
-  // Check if CV is owner-only (cannot be accessed via proof link)
+  // Check if PDF is owner-only (cannot be accessed via proof link)
   const isOwnerOnly = !proof.secretAccessCode && (!proof.allowedViewers || proof.allowedViewers.length === 0);
 
   return (
@@ -156,10 +156,10 @@ export default function ProofView() {
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Shield className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">CV Proof Verification</h1>
+            <h1 className="text-3xl font-bold">PDF Proof Verification</h1>
           </div>
           <p className="text-muted-foreground">
-            Blockchain-verified CV with encrypted storage
+            Blockchain-verified PDF with encrypted storage
           </p>
         </div>
 
@@ -194,10 +194,10 @@ export default function ProofView() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-amber-800 dark:text-amber-400">
                     <Lock className="h-5 w-5" />
-                    Owner-Only CV
+                    Owner-Only PDF
                   </CardTitle>
                   <CardDescription className="text-amber-700 dark:text-amber-500">
-                    This CV is set to owner-only mode
+                    This PDF is set to owner-only mode
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -206,10 +206,10 @@ export default function ProofView() {
                       <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-foreground">
-                          This CV cannot be accessed via proof link
+                          This PDF cannot be accessed via proof link
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          The CV owner has restricted access to owner-only mode. Only the owner can view this CV through their profile page.
+                          The PDF owner has restricted access to owner-only mode. Only the owner can view this PDF through their profile page.
                         </p>
                       </div>
                     </div>
@@ -219,7 +219,7 @@ export default function ProofView() {
                     <ul className="space-y-1 list-disc list-inside ml-2">
                       <li>Connect your wallet on this site</li>
                       <li>Navigate to your Profile page</li>
-                      <li>Find this CV and click "View CV (Decrypt)"</li>
+                      <li>Find this PDF and click "View PDF (Decrypt)"</li>
                     </ul>
                   </div>
                 </CardContent>
@@ -232,10 +232,10 @@ export default function ProofView() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Lock className="h-5 w-5 text-muted-foreground" />
-                    Access CV
+                    Access PDF
                   </CardTitle>
                   <CardDescription>
-                    Choose how to authenticate and decrypt the CV
+                    Choose how to authenticate and decrypt the PDF
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -308,7 +308,7 @@ export default function ProofView() {
                           data-testid="input-secret-code"
                         />
                         <p className="text-xs text-muted-foreground">
-                          If the CV owner shared a secret code with you, enter it here
+                          If the PDF owner shared a secret code with you, enter it here
                         </p>
                       </div>
                       {decryptError && (
@@ -375,17 +375,17 @@ export default function ProofView() {
                         {isDecrypting ? (
                           <>
                             <Key className="h-4 w-4 animate-spin" />
-                            Decrypting CV...
+                            Decrypting PDF...
                           </>
                         ) : (
                           <>
                             <FileText className="h-4 w-4" />
-                            Decrypt & View CV
+                            Decrypt & View PDF
                           </>
                         )}
                       </Button>
                       <p className="text-xs text-center text-muted-foreground">
-                        🔒 CV is encrypted with Seal. Access control verified on-chain.
+                        🔒 PDF is encrypted with Seal. Access control verified on-chain.
                       </p>
                     </>
                   ) : (
@@ -393,7 +393,7 @@ export default function ProofView() {
                       <div className="flex items-center gap-2 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 p-3">
                         <Unlock className="h-4 w-4 text-green-600 dark:text-green-400" />
                         <p className="text-sm font-medium text-green-800 dark:text-green-400">
-                          CV successfully decrypted and loaded
+                          PDF successfully decrypted and loaded
                         </p>
                       </div>
                       <Button
@@ -415,14 +415,14 @@ export default function ProofView() {
             {decryptedPdfUrl && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Decrypted CV</CardTitle>
+                  <CardTitle>Decrypted PDF</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="w-full h-[600px] border rounded-lg overflow-hidden">
                     <iframe
                       src={decryptedPdfUrl}
                       className="w-full h-full"
-                      title="Decrypted CV"
+                      title="Decrypted PDF"
                       data-testid="iframe-cv"
                     />
                   </div>

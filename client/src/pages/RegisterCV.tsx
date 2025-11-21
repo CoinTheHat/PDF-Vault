@@ -75,7 +75,7 @@ export default function RegisterCV() {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to register CV");
+        throw new Error(error.message || "Failed to register PDF");
       }
 
       const result = await response.json();

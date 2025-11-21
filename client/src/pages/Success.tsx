@@ -47,7 +47,7 @@ export default function Success() {
           </p>
           <Link href="/register">
             <Button data-testid="button-register-another" asChild>
-              <span>Register a CV</span>
+              <span>Register a PDF</span>
             </Button>
           </Link>
         </div>
@@ -63,9 +63,9 @@ export default function Success() {
           <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/20">
             <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-400" />
           </div>
-          <h1 className="mb-2 text-3xl font-bold">CV Successfully Registered!</h1>
+          <h1 className="mb-2 text-3xl font-bold">PDF Successfully Registered!</h1>
           <p className="text-muted-foreground">
-            Your CV has been registered with blockchain-backed proof.
+            Your PDF has been registered with blockchain-backed proof.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function Success() {
           <CardHeader>
             <CardTitle className="text-lg">Proof Code (Transaction Hash)</CardTitle>
             <CardDescription>
-              Use this code to verify your CV or share it with recruiters.
+              Use this code to verify your PDF or share it with others.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -96,7 +96,7 @@ export default function Success() {
                 <CardTitle className="text-lg">🔑 Secret Access Code</CardTitle>
               </div>
               <CardDescription>
-                Anyone with this code can decrypt and view your CV. Keep it safe!
+                Anyone with this code can decrypt and view your PDF. Keep it safe!
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -107,7 +107,7 @@ export default function Success() {
                 <CopyButton text={proof.secretAccessCode} label="Copy Code" />
               </div>
               <p className="text-xs text-muted-foreground text-center">
-                ⚠️ Share this code only with people you trust to view your CV
+                ⚠️ Share this code only with people you trust to view your PDF
               </p>
             </CardContent>
           </Card>
@@ -121,7 +121,7 @@ export default function Success() {
               <CardTitle className="text-lg">🔗 Shareable Verification Link</CardTitle>
             </div>
             <CardDescription>
-              Copy this link and share it with recruiters for instant CV verification.
+              Copy this link and share it with others for instant PDF verification.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -132,7 +132,7 @@ export default function Success() {
               <CopyButton text={shareableUrl} label="Copy Link" />
             </div>
             <p className="text-xs text-muted-foreground text-center">
-              ✨ Anyone with this link can view and verify your CV proof
+              ✨ Anyone with this link can view and verify your PDF proof
             </p>
           </CardContent>
         </Card>
@@ -178,7 +178,7 @@ export default function Success() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link href="/register" className="flex-1">
             <Button variant="outline" className="w-full" data-testid="button-register-another" asChild>
-              <span>Register Another CV</span>
+              <span>Register Another PDF</span>
             </Button>
           </Link>
           <Link href={`/p/${proofCode}`} className="flex-1">
@@ -205,11 +205,11 @@ export default function Success() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">2.</span>
-                <span>Recruiters can click the link to <strong>verify your CV instantly</strong> without any registration</span>
+                <span>Anyone can click the link to <strong>verify your PDF instantly</strong> without any registration</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">3.</span>
-                <span>Your CV is <strong>tamper-proof</strong> and permanently stored on Walrus decentralized storage with blockchain proof</span>
+                <span>Your PDF is <strong>tamper-proof</strong> and permanently stored on Walrus decentralized storage with blockchain proof</span>
               </li>
             </ul>
           </CardContent>

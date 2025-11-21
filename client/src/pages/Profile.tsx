@@ -84,7 +84,7 @@ export default function Profile() {
 
       if (!decryptRes.ok) {
         const errorData = await decryptRes.json();
-        throw new Error(errorData.message || "Failed to decrypt CV");
+        throw new Error(errorData.message || "Failed to decrypt PDF");
       }
 
       // Step 4: Open PDF in new tab
@@ -94,13 +94,13 @@ export default function Profile() {
 
       toast({
         title: "Success",
-        description: "CV decrypted and opened",
+        description: "PDF decrypted and opened",
       });
     } catch (err) {
       console.error("Decrypt error:", err);
       toast({
         title: "Decryption failed",
-        description: err instanceof Error ? err.message : "Failed to decrypt CV",
+        description: err instanceof Error ? err.message : "Failed to decrypt PDF",
         variant: "destructive",
       });
     } finally {
@@ -183,7 +183,7 @@ export default function Profile() {
           </Card>
         </div>
 
-        {/* CV Proofs List */}
+        {/* PDF Proofs List */}
         <div>
           <h2 className="text-xl font-semibold mb-4">
             Registered PDFs {proofs && `(${proofs.length})`}
@@ -228,7 +228,7 @@ export default function Profile() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
-                          <CardTitle className="text-lg">CV Proof</CardTitle>
+                          <CardTitle className="text-lg">PDF Proof</CardTitle>
                           <Badge 
                             className="gap-1 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-800"
                             data-testid={`badge-verified-${proof.id}`}
@@ -302,7 +302,7 @@ export default function Profile() {
                         ) : (
                           <>
                             <FileText className="h-4 w-4" />
-                            View CV (Decrypt)
+                            View PDF (Decrypt)
                             <ExternalLink className="h-3.5 w-3.5" />
                           </>
                         )}
@@ -318,14 +318,14 @@ export default function Profile() {
                 <div className="mb-4 rounded-full bg-muted p-4">
                   <AlertCircle className="h-8 w-8 text-muted-foreground" />
                 </div>
-                <h3 className="mb-2 text-lg font-semibold">No CVs Registered Yet</h3>
+                <h3 className="mb-2 text-lg font-semibold">No PDFs Registered Yet</h3>
                 <p className="mb-6 text-sm text-muted-foreground max-w-md">
-                  You haven't registered any CVs yet. Start by uploading your first CV to create a blockchain-backed proof.
+                  You haven't registered any PDFs yet. Start by uploading your first PDF to create a blockchain-backed proof.
                 </p>
                 <Button className="gap-2" data-testid="button-register-first-cv" asChild>
                   <Link href="/register">
                     <Plus className="h-4 w-4" />
-                    Register Your First CV
+                    Register Your First PDF
                   </Link>
                 </Button>
               </CardContent>
