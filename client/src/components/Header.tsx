@@ -81,9 +81,9 @@ export function Header() {
               <Shield className="h-5 w-5 text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="hidden md:inline text-base font-bold leading-tight">CV Proof Vault</span>
-              <span className="hidden md:inline text-xs text-muted-foreground font-normal">Enterprise Verification</span>
-              <span className="md:hidden text-base font-bold">CV Vault</span>
+              <span className="hidden md:inline text-base font-bold leading-tight">PDF Proof Vault</span>
+              <span className="hidden md:inline text-xs text-muted-foreground font-normal">On-Chain Verification</span>
+              <span className="md:hidden text-base font-bold">PDF Vault</span>
             </div>
           </div>
         </Link>
@@ -98,7 +98,7 @@ export function Header() {
               data-testid="button-register"
               asChild
             >
-              <span>Register CV</span>
+              <span>Register PDF</span>
             </Button>
           </Link>
           <Link href="/verify">

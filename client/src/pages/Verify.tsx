@@ -40,9 +40,9 @@ export default function Verify() {
       <div className="mx-auto max-w-xl">
         <Card className="border-card-border">
           <CardHeader>
-            <CardTitle className="text-2xl">Verify CV Proof</CardTitle>
+            <CardTitle className="text-2xl">Verify PDF Proof</CardTitle>
             <CardDescription>
-              Enter a proof code to verify the authenticity of a CV registration.
+              Enter a proof code to verify the authenticity of a PDF registration.
             </CardDescription>
           </CardHeader>
           <CardContent>

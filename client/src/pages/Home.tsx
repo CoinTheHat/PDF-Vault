@@ -31,17 +31,17 @@ export default function Home() {
             {/* Power Headline with Better Hierarchy */}
             <h1 className="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text">
               Tamper-Proof <br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">CV Verification</span>
+              <span className="bg-gradient-to-r from-primary via-primary to-primary/80 bg-clip-text text-transparent">PDF Verification</span>
             </h1>
             
             {/* Stronger, Cleaner Tagline */}
             <p className="mb-4 text-center text-xl sm:text-2xl font-semibold text-foreground/90">
-              Blockchain-powered credentials recruiters trust.
+              On-chain proof for documents you can trust.
             </p>
             
             {/* Simplified Supporting Copy */}
             <p className="mb-10 text-center text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-              Upload once. Verify forever. Store securely on Walrus, prove authenticity on Sui.
+              Upload once. Verify forever. Encrypted storage on Walrus, immutable proof on Sui blockchain.
             </p>
             
             {/* Premium CTA Buttons with Visual Prominence */}
@@ -55,7 +55,7 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-2">
                     <Upload className="h-5 w-5" />
-                    Register Your CV
+                    Register Your PDF
                   </span>
                 </Button>
               </Link>
@@ -69,7 +69,7 @@ export default function Home() {
                 >
                   <span className="flex items-center gap-2">
                     <Search className="h-5 w-5" />
-                    Verify a CV
+                    Verify a PDF
                   </span>
                 </Button>
               </Link>
@@ -102,8 +102,8 @@ export default function Home() {
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground font-bold text-xl shadow-lg">
                 1
               </div>
-              <h3 className="mb-2 font-semibold text-lg">Upload CV</h3>
-              <p className="text-sm text-muted-foreground">Connect wallet and upload your PDF</p>
+              <h3 className="mb-2 font-semibold text-lg">Upload PDF</h3>
+              <p className="text-sm text-muted-foreground">Connect wallet and upload your document</p>
             </div>
             
             <div className="flex flex-col items-center text-center">
@@ -128,7 +128,7 @@ export default function Home() {
       {/* Features Section */}
       <section className="py-16 bg-muted/30">
         <div className="container">
-          <h2 className="mb-12 text-center text-3xl font-semibold">Why Choose On-Chain CV Proof?</h2>
+          <h2 className="mb-12 text-center text-3xl font-semibold">Why Choose On-Chain PDF Proof?</h2>
           
           <div className="grid gap-8 md:grid-cols-3">
             <Card className="border-card-border">
@@ -138,7 +138,7 @@ export default function Home() {
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Tamper-Proof Security</h3>
                 <p className="text-muted-foreground">
-                  Your CV is hashed and stored with blockchain verification, making it impossible to forge or modify.
+                  Your PDF is hashed and stored with blockchain verification, making it impossible to forge or modify.
                 </p>
               </CardContent>
             </Card>
@@ -150,7 +150,7 @@ export default function Home() {
                 </div>
                 <h3 className="mb-2 text-xl font-semibold">Decentralized Storage</h3>
                 <p className="text-muted-foreground">
-                  CVs are stored on Walrus, ensuring permanent availability without relying on central servers.
+                  PDFs are encrypted and stored on Walrus, ensuring permanent availability without relying on central servers.
                 </p>
               </CardContent>
             </Card>
@@ -185,9 +185,9 @@ export default function Home() {
                     1
                   </div>
                   <div>
-                    <h4 className="mb-1 font-semibold">Upload Your CV</h4>
+                    <h4 className="mb-1 font-semibold">Upload Your PDF</h4>
                     <p className="text-sm text-muted-foreground">
-                      Upload your CV as a PDF file to our secure platform.
+                      Upload your PDF file to our secure platform.
                     </p>
                   </div>
                 </div>
@@ -263,9 +263,9 @@ export default function Home() {
                     3
                   </div>
                   <div>
-                    <h4 className="mb-1 font-semibold">Access CV Document</h4>
+                    <h4 className="mb-1 font-semibold">Access PDF Document</h4>
                     <p className="text-sm text-muted-foreground">
-                      Download the verified CV directly from decentralized storage.
+                      Download the verified PDF directly from decentralized storage.
                     </p>
                   </div>
                 </div>
@@ -293,12 +293,12 @@ export default function Home() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="mb-4 text-3xl font-semibold">Ready to Get Started?</h2>
             <p className="mb-8 text-lg text-muted-foreground">
-              Join the future of verifiable credentials with blockchain-backed CV proof.
+              Join the future of verifiable documents with blockchain-backed PDF proof.
             </p>
             <Link href="/register">
               <Button size="lg" className="font-semibold" data-testid="button-cta-register" asChild>
                 <span className="flex items-center gap-2">
-                  Register Your CV Now
+                  Register Your PDF Now
                   <FileCheck className="h-5 w-5" />
                 </span>
               </Button>
@@ -317,10 +317,10 @@ export default function Home() {
               <div className="md:col-span-2">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield className="h-5 w-5 text-primary" />
-                  <span className="font-bold text-lg">CV Proof Vault</span>
+                  <span className="font-bold text-lg">PDF Proof Vault</span>
                 </div>
                 <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-                  Enterprise-grade CV verification powered by blockchain technology. 
+                  Enterprise-grade PDF verification powered by blockchain technology. 
                   Secure, transparent, and trusted by professionals worldwide.
                 </p>
                 <div className="flex items-center gap-3">
@@ -340,8 +340,8 @@ export default function Home() {
               <div>
                 <h4 className="font-semibold mb-3 text-sm">Product</h4>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li><Link href="/register" data-testid="footer-link-register"><span className="hover:text-foreground transition-colors cursor-pointer">Register CV</span></Link></li>
-                  <li><Link href="/verify" data-testid="footer-link-verify"><span className="hover:text-foreground transition-colors cursor-pointer">Verify CV</span></Link></li>
+                  <li><Link href="/register" data-testid="footer-link-register"><span className="hover:text-foreground transition-colors cursor-pointer">Register PDF</span></Link></li>
+                  <li><Link href="/verify" data-testid="footer-link-verify"><span className="hover:text-foreground transition-colors cursor-pointer">Verify PDF</span></Link></li>
                   <li><Link href="/profile" data-testid="footer-link-profile"><span className="hover:text-foreground transition-colors cursor-pointer">My Profile</span></Link></li>
                 </ul>
               </div>
@@ -360,7 +360,7 @@ export default function Home() {
             {/* Copyright Bar */}
             <div className="pt-6 border-t flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="text-sm text-muted-foreground">
-                © 2024 CV Proof Vault. All rights reserved.
+                © 2024 PDF Proof Vault. All rights reserved.
               </div>
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <span className="hover:text-foreground transition-colors cursor-pointer">Privacy Policy</span>

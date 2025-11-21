@@ -48,10 +48,10 @@ export default function RegisterCV() {
         throw new Error("Please connect your wallet first");
       }
 
-      // Step 1: Upload CV and get file hash
+      // Step 1: Upload PDF and get file hash
       toast({
         title: "Step 1/3: Uploading to Walrus...",
-        description: "Uploading your CV to decentralized storage",
+        description: "Uploading your PDF to decentralized storage",
       });
 
       const formData = new FormData();
@@ -135,7 +135,7 @@ export default function RegisterCV() {
     onSuccess: (data: any) => {
       toast({
         title: "✅ Registration Complete!",
-        description: "Your CV is now on-chain and stored on Walrus!",
+        description: "Your PDF is now on-chain and stored on Walrus!",
       });
       setLocation(`/success/${data.proofCode}`);
     },
@@ -195,16 +195,16 @@ export default function RegisterCV() {
           <Alert className="mb-6" data-testid="alert-wallet-required">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Please connect your wallet (Slash/Sui Wallet) using the "Connect Wallet" button in the header to register your CV.
+              Please connect your wallet (Slash/Sui Wallet) using the "Connect Wallet" button in the header to register your PDF.
             </AlertDescription>
           </Alert>
         )}
 
         <Card className="border-card-border">
           <CardHeader>
-            <CardTitle className="text-2xl">Register Your CV</CardTitle>
+            <CardTitle className="text-2xl">Register Your PDF</CardTitle>
             <CardDescription>
-              Upload your CV and generate blockchain-backed proof for instant verification by recruiters.
+              Upload your PDF and generate blockchain-backed proof for instant verification.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -230,7 +230,7 @@ export default function RegisterCV() {
                   name="cvFile"
                   render={({ field: { onChange, value, ...field } }) => (
                     <FormItem>
-                      <FormLabel>CV Document (PDF)</FormLabel>
+                      <FormLabel>PDF Document</FormLabel>
                       <FormControl>
                         <div
                           className={`relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
@@ -289,7 +289,7 @@ export default function RegisterCV() {
                   name="accessMode"
                   render={({ field }) => (
                     <FormItem className="space-y-4">
-                      <FormLabel className="text-base">Who can access your CV?</FormLabel>
+                      <FormLabel className="text-base">Who can access your PDF?</FormLabel>
                       <FormControl>
                         <RadioGroup
                           onValueChange={field.onChange}
@@ -304,7 +304,7 @@ export default function RegisterCV() {
                                 <span className="font-medium">Owner Only</span>
                               </div>
                               <p className="text-sm text-muted-foreground mt-1">
-                                Only you can decrypt and view this CV
+                                Only you can decrypt and view this PDF
                               </p>
                             </Label>
                           </div>
@@ -347,7 +347,7 @@ export default function RegisterCV() {
                     <Alert className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/10">
                       <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
                       <AlertDescription className="text-sm text-amber-800 dark:text-amber-300">
-                        <strong>Important:</strong> To access your own CV, you must include your wallet address ({currentAccount?.address ? `${currentAccount.address.substring(0, 12)}...` : 'your address'}) in the list below. Only wallets in this list can decrypt the CV.
+                        <strong>Important:</strong> To access your own PDF, you must include your wallet address ({currentAccount?.address ? `${currentAccount.address.substring(0, 12)}...` : 'your address'}) in the list below. Only wallets in this list can decrypt the PDF.
                       </AlertDescription>
                     </Alert>
                     <FormField
@@ -365,7 +365,7 @@ export default function RegisterCV() {
                             />
                           </FormControl>
                           <FormDescription>
-                            Enter one wallet address per line. Only these wallets can decrypt your CV.
+                            Enter one wallet address per line. Only these wallets can decrypt your PDF.
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -387,7 +387,7 @@ export default function RegisterCV() {
                     </>
                   ) : (
                     <>
-                      Register CV
+                      Register PDF
                       <Upload className="ml-2 h-5 w-5" />
                     </>
                   )}
@@ -404,11 +404,11 @@ export default function RegisterCV() {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>Your CV will be uploaded to decentralized storage (Walrus)</span>
+                <span>Your PDF will be uploaded to decentralized storage (Walrus)</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
-                <span>A cryptographic hash of your CV will be computed for verification</span>
+                <span>A cryptographic hash of your PDF will be computed for verification</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
